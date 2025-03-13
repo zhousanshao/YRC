@@ -1,0 +1,18 @@
+<!-- templates/sales_app/delete_honor.html -->
+{% extends 'sales_app/base.html' %}
+{% load static %}
+
+{% block title %}删除荣誉信息{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">删除荣誉信息</h1>
+    <p>确定要删除以下荣誉信息吗？</p>
+    <p><strong>{{ honor.name }}</strong> - {{ honor.honor_type }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">删除</button>
+        <a href="{% url 'honor_hall' %}" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+{% endblock %}

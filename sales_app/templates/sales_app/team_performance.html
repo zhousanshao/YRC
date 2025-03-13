@@ -1,0 +1,30 @@
+{% extends 'sales_app/base.html' %}
+{% load static %}
+{% block title %}团队业绩 - 销售业绩查询系统{% endblock %}
+
+{% block content %}
+<h2>团队业绩</h2>
+<p>日期：{{ date }}</p>
+{% if data.empty %}
+    <p>未找到该日期的团队业绩记录。</p>
+{% else %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>当天业绩</th>
+                <th>当月业绩</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data.itertuples %}
+            <tr>
+                <td>{{ row.姓名 }}</td>
+                <td>{{ row.当天业绩 }}</td>
+                <td>{{ row.当月业绩 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}

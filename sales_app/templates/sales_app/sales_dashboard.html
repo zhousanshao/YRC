@@ -1,0 +1,25 @@
+{% extends 'sales_app/base.html' %}
+{% load static %}
+{% block title %}销售看板{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">销售看板 - {{ date }}</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="text-center">销售业绩排名</h3>
+            <img src="data:image/png;base64,{{ bar_chart }}" class="img-fluid" alt="销售业绩排名">
+        </div>
+        <div class="col-md-6">
+            <h3 class="text-center">团队业绩占比</h3>
+            <img src="data:image/png;base64,{{ pie_chart }}" class="img-fluid" alt="团队业绩占比">
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3 class="text-center">本月新增客户</h3>
+            <img src="data:image/png;base64,{{ line_chart }}" class="img-fluid" alt="本月新增客户">
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+<!-- templates/sales_app/honor_hall.html -->
+{% extends 'sales_app/base.html' %}
+{% load static %}
+
+{% block title %}荣誉殿堂{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">荣誉殿堂</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <img src="{% static 'images/million_club.png' %}" class="card-img-top" alt="百万俱乐部" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">百万俱乐部</h5>
+                    <p class="card-text">累计业绩达到100w的员工</p>
+                    <a href="{% url 'million_club' %}" class="btn btn-primary">查看详情</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <img src="{% static 'images/king_team.jpg' %}" class="card-img-top" alt="王者战队" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">王者战队</h5>
+                    <p class="card-text">团队积分高的团队</p>
+                    <a href="{% url 'king_team' %}" class="btn btn-primary">查看详情</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <img src="{% static 'images/flying_star.png' %}" class="card-img-top" alt="飞跃之星" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">飞跃之星</h5>
+                    <p class="card-text">业绩超过30W的员工</p>
+                    <a href="{% url 'flying_star' %}" class="btn btn-primary">查看详情</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

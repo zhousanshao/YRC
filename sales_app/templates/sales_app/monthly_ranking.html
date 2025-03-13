@@ -1,0 +1,57 @@
+<!-- templates/sales_app/monthly_ranking.html -->
+{% extends 'sales_app/base.html' %}
+{% load static %}
+
+{% block title %}月排行榜展示{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- 左边：文字内容 -->
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h3 class="text-center mb-4">月排行榜展示</h3>
+                    {% if messages %}
+                        <div class="alert alert-danger">
+                            {% for message in messages %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if data %}
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>姓名</th>
+                                    <th>当月业绩</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in data %}
+                                    <tr>
+                                        <td>{{ row.姓名 }}</td>
+                                        <td>{{ row.当月业绩 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>暂无数据。</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 右边：图表内容 -->
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="text-center mb-4">月排行榜图表</h4>
+                    <img src="{{ chart_url }}" alt="月排行榜图表" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
