@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "routes": [
+  "builds": [
     {
-      "src": "/(.*)",
-      "dest": "/app/$1"
+      "src": "requirements.txt",
+      "use": "@vercel/python",
+      "config": {
+        "outputDirectory": "output"
+      }
     }
   ]
 }
