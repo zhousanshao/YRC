@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玉汝成-云端知识库FAQ搜索</title>
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-light: #3b82f6;
+            --primary-ultralight: #eff6ff;
+            --secondary: #0f172a;
+            --text-primary: #333;
+            --text-secondary: #64748b;
+            --bg-light: #f0f7ff;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 100, 0.08);
+            --shadow: 0 2px 10px rgba(0, 0, 100, 0.1);
+            --shadow-md: 0 5px 15px rgba(0, 0, 100, 0.1);
+            --radius: 10px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #1a56db, #3b82f6, #60a5fa);
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .search-container {
+            background-color: var(--white);
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .search-container:focus-within {
+            box-shadow: var(--shadow-md);
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 16px;
+            border: 2px solid var(--primary-ultralight);
+            border-radius: 8px;
+            transition: var(--transition);
+            box-sizing: border-box;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            padding-left: 45px;
+        }
+
+        #search-input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: thin;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            background-color: var(--white);
+            border: 1px solid var(--primary-ultralight);
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .category-btn:hover {
+            background-color: var(--primary-ultralight);
+            color: var(--primary);
+        }
+
+        .category-btn.active {
+            background-color: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        #faq-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .faq-item {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--primary-light);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .faq-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 30px 30px 0;
+            border-color: transparent var(--primary-ultralight) transparent transparent;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .faq-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .faq-item:hover::before {
+            opacity: 1;
+        }
+
+        .question {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 17px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--primary-ultralight);
+            display: flex;
+            align-items: center;
+        }
+
+        .question::before {
+            content: "Q:";
+            font-weight: bold;
+            margin-right: 8px;
+            color: var(--primary-light);
+        }
+
+        .answer {
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 15px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .answer::before {
+            content: "A:";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: var(--text-secondary);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 40px;
+            background-color: var(--white);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-sm);
+            margin-top: 20px;
+        }
+
+        .no-results::before {
+            content: "🔍";
+            font-size: 40px;
+            display: block;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background-color: var(--primary-ultralight);
+            color: var(--primary);
+        }
+
+        /* 新增高亮样式 */
+        .highlight {
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            header {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .search-container {
+                padding: 15px;
+            }
+
+            .faq-item {
+                padding: 15px;
+            }
+
+            .question {
+                font-size: 16px;
+                padding-right: 60px;
+            }
+
+            .category-badge {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>玉汝成-云端知识库FAQ</h1>
+        <p class="header-subtitle">客户常见售后问题指南（第一期）</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="输入关键词搜索问题（例如：雕铣机、报警、Exocad）...">
+    </div>
+
+    <div class="categories">
+        <button class="category-btn active" data-category="all">全部问题</button>
+        <button class="category-btn" data-category="scanner">扫描仪</button>
+        <button class="category-btn" data-category="exocad">Exocad软件</button>
+        <button class="category-btn" data-category="5x">5X雕铣机</button>
+        <button class="category-btn" data-category="f10">F10+烧结炉</button>
+        <button class="category-btn" data-category="hyperdent">Hyperdent软件</button>
+        <button class="category-btn" data-category="machine">机床通用</button>
+    </div>
+
+    <div id="faq-container">
+        <!-- FAQ内容将在这里显示 -->
+    </div>
+
+    <script>
+        // 分类后的FAQ数据，部分内容已添加加粗标记
+        const faqData = [
+            {
+                "question": "为什么扫描仪纹理扫描出来的牙齿影像只能查看是黑白的?",
+                "answer": "因为客户是用查看器打开的,需要<strong>EXO设计</strong>打开才会显示颜色。",
+                "category": "scanner"
+            },
+            {
+                "question": "为什么安装完毕Exocad打开后会报警?",
+                "answer": "点击<strong>“YES”按键</strong>,可以正常使用。",
+                "category": "exocad"
+            },
+            {
+                "question": "5x雕铣机显示Y轴(X轴)超过极限值,客户无法移动主轴,该如何解决?",
+                "answer": "关机,用力把主轴移动到<strong>2号刀库上面</strong>(此报警一般都是在新机器第一次开机才会出现)。",
+                "category": "5x"
+            },
+            {
+                "question": "5x雕铣机报警——主轴伺服驱动器报警,该如何解决?",
+                "answer": "关机等待<strong>两分钟</strong>再重启机器(重启间隔最少30秒)。",
+                "category": "5x"
+            },
+            {
+                "question": "5x雕铣机断刀报警,该如何解决?",
+                "answer": "点击<strong>复位-装夹位-刀清零-密码520</strong>,换新刀重新加工(需要检查刀具是否放置正确,排版是不是有错误,防止2次断刀)。",
+                "category": "5x"
+            },
+            {
+                "question": "F10+烧结炉出厂有没有配置测温片?",
+                "answer": "没有配置(客户可以在当地经销商或者<strong>淘宝</strong>买到)。",
+                "category": "f10"
+            },
+            {
+                "question": "5x雕铣机怎么删除NC文件?",
+                "answer": "1、点击<strong>系统操作-删除程序-选择文件点击删除</strong>; 2、点击删除全部,但是系统会保留1-2个当前加载的文件不允许删除。",
+                "category": "5x"
+            },
+            {
+                "question": "5X雕铣机的校准操作,有没有操作视频?",
+                "answer": "没有视频,只有对应的操作图片和文档,因为客户操作失误以后问题会更严重,若客户需进行机器校准,可联系<strong>玉汝成售后工作组人员</strong>。",
+                "category": "5x"
+            },
+            {
+                "question": "Hyperdent软件在5X雕铣机上计算报错,该如何解决?",
+                "answer": "1、检查牙型是否错误; 2、检查是否有违规操作; 3、还不能解决情况下咨询玉汝成售后工作组人员解决。",
+                "category": "hyperdent"
+            },
+            {
+                "question": "Hyperdent软件在5X设备打不开的原因及解决方法?",
+                "answer": "1、检查<strong>“软件保护”</strong>是否没在电脑上; 2、“软件保护”更换USB插口尝试; 3、被杀毒软件或者防火墙误杀,关闭电脑的杀毒软件和防火墙。",
+                "category": "hyperdent"
+            },
+            {
+                "question": "5X雕铣机圆盘保存的具体路径该如何查找?",
+                "answer": "默认路径<strong>C:\\Users\\Public\\Documents\\hyperDENT\\Projects</strong>",
+                "category": "5x"
+            },
+            {
+                "question": "5X雕铣机的3号刀加工过程中断的根本原因和解决方法?",
+                "answer": "若发现此情景,可联系玉汝成售后工作组人员进行远程协调处理。",
+                "category": "5x"
+            },
+            {
+                "question": "车针表面涂层磨没了,应该如何处理?",
+                "answer": "车针表面涂层没有了,需要更换<strong>新刀</strong>。",
+                "category": "machine"
+            },
+            {
+                "question": "玻璃陶瓷加工的最新厚度是多少?",
+                "answer": "玻璃陶瓷加工的最新厚度是<strong>0.3mm</strong>。",
+                "category": "machine"
+            },
+            {
+                "question": "5x排版的时候选择什么策略最好?",
+                "answer": "建议选择<strong>3+2的策略</strong>。",
+                "category": "5x"
+            },
+            {
+                "question": "机床对刀最低点错误/Z轴负限位警报,该如何解决?",
+                "answer": "1、检查主轴是否有对应刀具→检查主轴刀具是不是正常,按压对刀仪如果出现卡顿现象为粉尘卡主; 2、检查坐标是不是被更改→坐标页面是不是被客户更改为非正确坐标; 3、手动按压无反应情况下插入键盘按<strong>F5.F3</strong>,在按对刀仪检查是否有信号→屏幕对应位置应出现通断信号在无信号情况下,可以判断是对刀仪发生故障需要进行更换新的对刀仪。",
+                "category": "machine"
+            },
+            {
+                "question": "机床主轴不转?",
+                "answer": "1、取消报警后手动启动主轴未旋转→检查主轴伺服驱动器,重启机床后可正常工作; 2、检查气压阀中存在较高水位或者有明显水渍,检查气管中也有水珠→过滤阀中是否有水,需要客户安装冷凝器或过滤器; 3、减压阀正常,变频器正常,手动启动无旋转→减压阀无水,变频器正常输出,继电器正常工作,线路正常,重启后故障依旧,尝试自动加工下主轴不转,手动模式主轴无反应,主轴发生损坏属于硬件故障需更换。",
+                "category": "machine"
+            },
+            {
+                "question": "xyzab轴伺服驱动器发生警报,该如何解决?",
+                "answer": "1、重启机床→重启一切恢复正常; 2、驱动器电路没有联通导致报警→关机断电2分钟重启进行机床电路重启→驱动器硬件发生故障需要更换新的驱动器; 3、驱动器电路没有联通导致报警→两次以后还有问题需要检查硬件线路以及驱动器报警信息→线路故障更换对应线路; 4、电压不稳→屏幕显示加工中断电万用表检查<strong>220V电源电压</strong>,询问在一条线路上有多少用电器(客户端基础配置不够); 5、未回原点→开机时原点模式下会出现这个报警只需要点击开机回零等待即可。",
+                "category": "machine"
+            },
+            {
+                "question": "机床主轴位置发生漏气,该如何解决?",
+                "answer": "1、关机状态不漏气→关机后不漏气说明电磁阀正常,可能加工完成后的主轴冷却阶段客户自己发现的,培训客户使用期间的一些小细节; 2、关机漏气→拆开后盖检查每个电磁阀是否出现关闭不严或者不工作现象。",
+                "category": "machine"
+            },
+            {
+                "question": "机床插入U盘读取不到,该如何解决?",
+                "answer": "1、U盘中病毒/U盘硬件故障→插入电脑看电脑是否识别U盘,如果识别格式化U盘,如果不识别就是U盘故障; 2、U盘接口松动→将机床顶部后盖打开,U盘直接插入到电脑看是否能显示U盘。",
+                "category": "machine"
+            },
+            {
+                "question": "屏幕不显示,该如何解决?",
+                "answer": "1、重启机床如果正常是电压不稳→建议客户使用<strong>稳压器</strong>; 2、重启还是不显示需要,拆开显示器位置检查线路→如线路没有问题,则显示器故障。",
+                "category": "machine"
+            },
+            {
+                "question": "触摸屏不起作用,该如何解决?",
+                "answer": "1、重启机床后正常证明触摸屏供电正常→系统识别不到或者屏幕触点偏移需要校准; 2、显示屏幕正常,触摸无反应重启机床或者拆开屏幕检查屏幕后放连接线→如线路没有问题,则显示器触摸屏故障。",
+                "category": "machine"
+            },
+            {
+                "question": "机床无气警报?",
+                "answer": "1、主气管没有气→检查进气主管路是不是接上并有足够的气压,如果主管路气压没有就是气源没打开; 2、数显气压表显示气压低或者0 →主管路通气的情况下把减压阀调节扣打开调大看减压阀气压表是不是正常,减压阀气压表如果正常则数显气压表故障; 3、主气压表无气压显示→进气管有气,出气管无气,调节阀门无任何效果,检查无水→减压阀故障需要更换。",
+                "category": "machine"
+            }
+        ];
+
+        // 当前活跃的分类和搜索关键词
+        let currentCategory = 'all';
+        let currentSearch = '';
+
+        // 高亮显示文本中的关键词
+        function highlightText(text, keyword) {
+            if (!keyword) return text;
+
+            // 转义特殊字符，确保正则表达式能正确匹配
+            const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            // 创建不区分大小写的正则表达式
+            const regex = new RegExp(`(${escapedKeyword})`, 'gi');
+            // 替换匹配的关键词，添加高亮标签
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        // 渲染FAQ列表
+        function renderFAQ() {
+            const container = document.getElementById('faq-container');
+            container.innerHTML = '';
+
+            // 先按分类筛选
+            let filteredByCategory = faqData.filter(item =>
+                currentCategory === 'all' || item.category === currentCategory
+            );
+
+            // 再按搜索关键词筛选
+            let filteredFAQ = filteredByCategory.filter(item =>
+                item.question.toLowerCase().includes(currentSearch) ||
+                item.answer.toLowerCase().includes(currentSearch)
+            );
+
+            if (filteredFAQ.length === 0) {
+                container.innerHTML = '<div class="no-results">没有找到匹配的问题，请尝试其他关键词或分类。</div>';
+                return;
+            }
+
+            // 添加动画效果和高亮显示
+            filteredFAQ.forEach((item, index) => {
+                setTimeout(() => {
+                    const faqItem = document.createElement('div');
+                    faqItem.className = 'faq-item';
+                    faqItem.style.opacity = '0';
+                    faqItem.style.transform = 'translateY(20px)';
+                    faqItem.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+                    // 获取分类名称用于显示
+                    const categoryNames = {
+                        'scanner': '扫描仪',
+                        'exocad': 'Exocad',
+                        '5x': '5X雕铣机',
+                        'f10': 'F10+烧结炉',
+                        'hyperdent': 'Hyperdent',
+                        'machine': '机床通用'
+                    };
+
+                    // 对问题和答案中的关键词进行高亮处理
+                    const highlightedQuestion = highlightText(item.question, currentSearch);
+                    const highlightedAnswer = highlightText(item.answer, currentSearch);
+
+                    faqItem.innerHTML = `
+            <div class="category-badge">${categoryNames[item.category]}</div>
+            <div class="question">${highlightedQuestion}</div>
+            <div class="answer">${highlightedAnswer}</div>
+          `;
+
+                    container.appendChild(faqItem);
+
+                    // 触发动画
+                    setTimeout(() => {
+                        faqItem.style.opacity = '1';
+                        faqItem.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 50);
+            });
+        }
+
+        // 初始渲染所有FAQ
+        renderFAQ();
+
+        // 搜索功能
+        document.getElementById('search-input').addEventListener('input', function (e) {
+            currentSearch = e.target.value.toLowerCase();
+            renderFAQ();
+        });
+
+        // 分类切换功能
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                // 更新活跃状态
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // 更新当前分类并重新渲染
+                currentCategory = this.getAttribute('data-category');
+                renderFAQ();
+            });
+        });
+    </script>
+</body>
+
+</html>
